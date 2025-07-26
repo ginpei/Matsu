@@ -6,9 +6,13 @@ namespace VolumeDemo
     class Program
     {
         private static bool _running = true;
+        private static VolumeManager _volumeManager;
 
         static void Main(string[] args)
         {
+            // Initialize volume manager
+            _volumeManager = new VolumeManager();
+            
             // Set up Ctrl+C handler
             Console.CancelKeyPress += (sender, e) =>
             {
@@ -23,7 +27,12 @@ namespace VolumeDemo
                 ShowMenu();
                 string input = Console.ReadLine();
                 
-                if (int.TryParse(input, out int choice))
+                if (string.IsNullOrEmpty(input))
+                {
+                    // Empty input - just refresh menu silently
+                    continue;
+                }
+                else if (int.TryParse(input, out int choice))
                 {
                     ProcessMenuChoice(choice);
                 }
@@ -34,15 +43,31 @@ namespace VolumeDemo
                     Console.ReadKey();
                 }
             }
+            
+            // Clean up
+            _volumeManager?.Dispose();
         }
 
         private static void ShowMenu()
         {
             Console.Clear();
             Console.WriteLine("Volume Demo");
-            Console.WriteLine("1. System Information");
-            Console.WriteLine("2. Show Hello");
-            Console.WriteLine("3. Show Yo");
+            Console.WriteLine("============");
+            
+            if (_volumeManager.IsAvailable)
+            {
+                Console.WriteLine($"Device: {_volumeManager.DeviceName}");
+                Console.WriteLine($"Current Volume: {_volumeManager.CurrentVolume}{(_volumeManager.IsMuted ? " (MUTED)" : "")}");
+            }
+            else
+            {
+                Console.WriteLine("No audio device available");
+            }
+            
+            Console.WriteLine();
+            Console.WriteLine("1. Set volume");
+            Console.WriteLine("2. Toggle mute/unmute");
+            Console.WriteLine("3. Real-time volume monitor");
             Console.WriteLine("0. Exit");
             Console.Write("Enter your choice: ");
         }
@@ -54,13 +79,13 @@ namespace VolumeDemo
             switch (choice)
             {
                 case 1:
-                    ShowSystemInformation();
+                    SetVolume();
                     break;
                 case 2:
-                    ShowHello();
+                    ToggleMute();
                     break;
                 case 3:
-                    ShowYo();
+                    RealTimeVolumeMonitor();
                     break;
                 case 0:
                     _running = false;
@@ -78,25 +103,100 @@ namespace VolumeDemo
             }
         }
 
-        private static void ShowSystemInformation()
+
+        private static void SetVolume()
         {
-            Console.WriteLine("System Information");
-            Console.WriteLine("==================");
-            Console.WriteLine($"Current Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            Console.WriteLine($"Operating System: {Environment.OSVersion}");
-            Console.WriteLine($".NET Framework Version: {Environment.Version}");
-            Console.WriteLine($"Machine Name: {Environment.MachineName}");
-            Console.WriteLine($"User Name: {Environment.UserName}");
+            if (!_volumeManager.IsAvailable)
+            {
+                Console.WriteLine("No audio device available.");
+                return;
+            }
+            
+            Console.Write("Enter volume level (0-100): ");
+            string input = Console.ReadLine();
+            
+            if (int.TryParse(input, out int volume))
+            {
+                if (volume >= 0 && volume <= 100)
+                {
+                    if (_volumeManager.SetVolume(volume))
+                    {
+                        Console.WriteLine($"Volume set to {volume}%");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error setting volume.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Volume must be between 0 and 100.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter a number between 0 and 100.");
+            }
         }
 
-        private static void ShowHello()
+        private static void ToggleMute()
         {
-            Console.WriteLine("Hello");
+            if (!_volumeManager.IsAvailable)
+            {
+                Console.WriteLine("No audio device available.");
+                return;
+            }
+            
+            bool wasMuted = _volumeManager.IsMuted;
+            
+            if (_volumeManager.ToggleMute())
+            {
+                Console.WriteLine(wasMuted ? "Audio unmuted." : "Audio muted.");
+            }
+            else
+            {
+                Console.WriteLine("Error toggling mute.");
+            }
         }
 
-        private static void ShowYo()
+        private static void RealTimeVolumeMonitor()
         {
-            Console.WriteLine("Yo");
+            Console.WriteLine("Real-time Volume Monitor");
+            Console.WriteLine("========================");
+            Console.WriteLine("Press Enter to return to menu...");
+            Console.WriteLine();
+            
+            // Event handler for volume changes
+            void OnStateChanged(VolumeState current, VolumeState previous)
+            {
+                Console.WriteLine($"[{current.Timestamp:HH:mm:ss}] {current.DeviceName}: {current.Volume}%{(current.IsMuted ? " (MUTED)" : "")}");
+            }
+            
+            // Subscribe to events and start monitoring
+            _volumeManager.StateChanged += OnStateChanged;
+            _volumeManager.StartMonitoring();
+            
+            // Show initial state
+            if (_volumeManager.IsAvailable)
+            {
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {_volumeManager.DeviceName}: {_volumeManager.CurrentVolume}%{(_volumeManager.IsMuted ? " (MUTED)" : "")}");
+            }
+            else
+            {
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] No audio device available");
+            }
+            
+            // Wait for Enter key specifically to exit
+            ConsoleKeyInfo key;
+            do {
+                key = Console.ReadKey(true);
+            } while (key.Key != ConsoleKey.Enter);
+            
+            // Clean up
+            _volumeManager.StopMonitoring();
+            _volumeManager.StateChanged -= OnStateChanged;
+            
+            Console.WriteLine("\nReturning to menu...");
         }
     }
 }
