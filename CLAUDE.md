@@ -52,16 +52,18 @@ dotnet clean
 
 ### Demo Projects
 ```bash
-# Build all projects in solution
-dotnet build Matsu.sln
+# Build specific demo projects (demos are excluded from main solution)
+dotnet build demos/console/ConsoleDemo.csproj
+dotnet build demos/volume/VolumeDemo.csproj
+dotnet build demos/wifi/WiFiDemo.csproj
 
 # Run specific demo projects
 dotnet run --project demos/console/ConsoleDemo.csproj
 dotnet run --project demos/volume/VolumeDemo.csproj
 dotnet run --project demos/wifi/WiFiDemo.csproj
 
-# Build specific demo project
-dotnet build demos/console/ConsoleDemo.csproj
+# Build all demo projects at once
+dotnet build demos/console/ConsoleDemo.csproj && dotnet build demos/volume/VolumeDemo.csproj && dotnet build demos/wifi/WiFiDemo.csproj
 ```
 
 ## Dependencies
@@ -102,8 +104,10 @@ Comprehensive technical documentation is available in the `/docs` folder:
 ## Development Notes
 
 - Main application targets .NET 8.0 Windows while demos use .NET Framework 4.8
+- Demo projects are excluded from main solution build via `Directory.Build.props`
 - System tray application pattern: main window hides to tray rather than closing
 - Demo projects demonstrate common Windows system integration patterns
 - WiFi demo requires location permissions on Windows 11 24H2+
 - Audio demo showcases CoreAudio API integration
 - All projects follow interactive console patterns with graceful shutdown handling
+- No formal test projects are configured in this solution
