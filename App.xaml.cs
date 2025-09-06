@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Forms = System.Windows.Forms; // Alias to avoid ambiguity
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Matsu
 {
@@ -10,6 +11,7 @@ namespace Matsu
     public partial class App : System.Windows.Application
     {
         private Forms.NotifyIcon? _notifyIcon;
+        private WiFiStatusMonitor? _wifiMonitor;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -32,6 +34,14 @@ namespace Matsu
             _notifyIcon.ContextMenuStrip = contextMenu;
 
             _notifyIcon.MouseClick += NotifyIcon_MouseClick;
+
+            // Initialize WiFi monitoring
+            _wifiMonitor = new WiFiStatusMonitor();
+            _wifiMonitor.StatusChanged += OnWiFiStatusChanged;
+            if (!_wifiMonitor.Initialize())
+            {
+                Debug.WriteLine("Failed to initialize WiFi monitoring");
+            }
         }
 
         private void NotifyIcon_MouseClick(object? sender, Forms.MouseEventArgs e)
@@ -71,6 +81,14 @@ namespace Matsu
             return mainWindow;
         }
 
+        private void OnWiFiStatusChanged(object? sender, WiFiStatusEventArgs e)
+        {
+            string message = e.IsConnected 
+                ? $"WiFi Connected: {e.SSID}" 
+                : "WiFi Disconnected";
+            Debug.WriteLine(message);
+        }
+
         private void ShowAbout()
         {
             // TODO: Implement
@@ -79,6 +97,7 @@ namespace Matsu
 
         protected override void OnExit(ExitEventArgs e)
         {
+            _wifiMonitor?.Dispose();
             _notifyIcon?.Dispose();
             base.OnExit(e);
         }
