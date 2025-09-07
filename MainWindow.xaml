@@ -43,8 +43,6 @@
                     ValueChanged="VolumeSlider_ValueChanged"
                     TickFrequency="10" TickPlacement="BottomRight"
                     IsMoveToPointEnabled="True"/>
-            <TextBlock Name="SliderValueLabel" Text="50%"
-                       FontSize="10" HorizontalAlignment="Center" Foreground="Gray"/>
         </StackPanel>
 
         <!-- Status Message -->

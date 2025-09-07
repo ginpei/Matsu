@@ -102,7 +102,6 @@ namespace Matsu
                 VolumeSlider.ValueChanged -= VolumeSlider_ValueChanged;
                 VolumeSlider.Value = _volumeManager.CurrentVolume;
                 VolumeSlider.ValueChanged += VolumeSlider_ValueChanged;
-                SliderValueLabel.Text = $"{_volumeManager.CurrentVolume}%";
                 
                 EnableControls();
             }
@@ -111,7 +110,6 @@ namespace Matsu
                 DeviceNameLabel.Text = "Audio Device: No device available";
                 VolumeStatusLabel.Text = "Volume: --%";
                 VolumeStatusLabel.Foreground = Brushes.Gray;
-                SliderValueLabel.Text = "--%";
                 DisableControls();
             }
         }
@@ -174,19 +172,9 @@ namespace Matsu
 
         private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (_volumeManager?.IsAvailable != true) 
-            {
-                // Update label even when no device is available
-                if (SliderValueLabel != null)
-                    SliderValueLabel.Text = $"{(int)e.NewValue}%";
-                return;
-            }
-            
             try
             {
                 int volume = (int)e.NewValue;
-                if (SliderValueLabel != null)
-                    SliderValueLabel.Text = $"{volume}%";
                 
                 if (_volumeManager.SetVolume(volume))
                 {
