@@ -111,3 +111,4 @@ Comprehensive technical documentation is available in the `/docs` folder:
 - Audio demo showcases CoreAudio API integration
 - All projects follow interactive console patterns with graceful shutdown handling
 - No formal test projects are configured in this solution
+- when i ask to research, just research and report the result
