@@ -7,11 +7,14 @@ namespace Matsu
     public class WiFiStatusMonitor : IDisposable
     {
         private bool _disposed = false;
-        private NativeWifiPlayer _wifiPlayer;
+        private NativeWifiPlayer? _wifiPlayer;
         private bool? _lastConnectionState = null;
         private string _lastSSID = string.Empty;
 
         public event EventHandler<WiFiStatusEventArgs>? StatusChanged;
+
+        public bool IsConnected => _lastConnectionState ?? false;
+        public string CurrentSSID => _lastSSID;
 
         public WiFiStatusMonitor()
         {

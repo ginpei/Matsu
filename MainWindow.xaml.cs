@@ -18,11 +18,13 @@ namespace Matsu
     public partial class MainWindow : Window
     {
         private VolumeManager? _volumeManager;
+        private WiFiStatusMonitor? _wifiMonitor;
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeVolumeManager();
+            InitializeWiFiMonitor();
         }
 
         private void InitializeVolumeManager()
@@ -47,9 +49,45 @@ namespace Matsu
             }
         }
 
+        private void InitializeWiFiMonitor()
+        {
+            try
+            {
+                _wifiMonitor = new WiFiStatusMonitor();
+                _wifiMonitor.StatusChanged += OnWiFiStatusChanged;
+                
+                if (_wifiMonitor.Initialize())
+                {
+                    UpdateWiFiDisplay();
+                    SetStatus("System monitoring initialized", Brushes.Green);
+                }
+                else
+                {
+                    WiFiStatusLabel.Text = "WiFi: Permission required";
+                    NetworkNameLabel.Text = "Enable location access in Windows Settings";
+                    NetworkNameLabel.Foreground = Brushes.Orange;
+                }
+            }
+            catch (Exception)
+            {
+                // Clean up partial initialization
+                _wifiMonitor?.Dispose();
+                _wifiMonitor = null;
+                
+                WiFiStatusLabel.Text = "WiFi: Error";
+                NetworkNameLabel.Text = "WiFi monitoring unavailable";
+                NetworkNameLabel.Foreground = Brushes.Red;
+            }
+        }
+
         private void OnVolumeStateChanged(VolumeState current, VolumeState previous)
         {
             Dispatcher.Invoke(() => UpdateVolumeDisplay());
+        }
+
+        private void OnWiFiStatusChanged(object? sender, WiFiStatusEventArgs e)
+        {
+            Dispatcher.Invoke(() => UpdateWiFiDisplay());
         }
 
         private void UpdateVolumeDisplay()
@@ -75,6 +113,24 @@ namespace Matsu
                 VolumeStatusLabel.Foreground = Brushes.Gray;
                 SliderValueLabel.Text = "--%";
                 DisableControls();
+            }
+        }
+
+        private void UpdateWiFiDisplay()
+        {
+            if (_wifiMonitor?.IsConnected == true)
+            {
+                WiFiStatusLabel.Text = "WiFi: Connected";
+                WiFiStatusLabel.Foreground = Brushes.Green;
+                NetworkNameLabel.Text = $"Network: {_wifiMonitor.CurrentSSID}";
+                NetworkNameLabel.Foreground = Brushes.DarkBlue;
+            }
+            else
+            {
+                WiFiStatusLabel.Text = "WiFi: Disconnected";
+                WiFiStatusLabel.Foreground = Brushes.Red;
+                NetworkNameLabel.Text = "No network connection";
+                NetworkNameLabel.Foreground = Brushes.Gray;
             }
         }
 
@@ -150,6 +206,7 @@ namespace Matsu
         protected override void OnClosed(EventArgs e)
         {
             _volumeManager?.Dispose();
+            _wifiMonitor?.Dispose();
             base.OnClosed(e);
         }
     }
