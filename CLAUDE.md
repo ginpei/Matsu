@@ -12,6 +12,7 @@ Matsu is a WPF system tray application with accompanying demo projects and compr
 - **WPF Application**: Uses Windows Presentation Foundation for the GUI (.NET 8.0)
 - **System Tray Integration**: Utilizes Windows Forms NotifyIcon for system tray functionality
 - **Shutdown Management**: Configured with `ShutdownMode.OnExplicitShutdown` to persist in system tray when main window is closed
+- **Navigation System**: Frame-based navigation between Dashboard and About pages with custom navigation button selection tracking
 
 ### Demo Projects (.NET Framework 4.8)
 - **Console Demo**: Interactive menu-driven console application
@@ -20,13 +21,18 @@ Matsu is a WPF system tray application with accompanying demo projects and compr
 
 ### Key Components
 
-**Main Application:**
-- `App.xaml.cs`: Main application class that handles system tray setup, context menu creation, and window management
-- `MainWindow.xaml/cs`: Primary application window (currently minimal/empty)
-- System tray features:
-  - Left-click: Shows main window
-  - Right-click: Context menu with Settings, About, and Exit options
-  - Window closing is intercepted to hide instead of exit
+**Main Application Core:**
+- `App.xaml.cs`: Main application class that handles system tray setup, context menu creation, window management, and WiFi monitoring initialization
+- `MainWindow.xaml/cs`: Primary application window with frame-based navigation between pages and custom navigation button states
+- `DashboardPage.xaml/cs`: Main functional page integrating volume control and WiFi status monitoring with real-time updates
+- `AboutPage.xaml/cs`: Simple about page for application information
+- `WiFiStatusMonitor.cs`: WiFi connection status monitoring with event-driven architecture using ManagedNativeWifi
+- `VolumeManager.cs`: Audio device management and volume control using AudioSwitcher.AudioApi.CoreAudio
+
+**System Tray Features:**
+- Left-click: Shows main window
+- Right-click: Context menu with Settings, About, and Exit options
+- Window closing is intercepted to hide instead of exit
 
 **Demo Projects:**
 - `demos/console/Program.cs`: Interactive console application with menu system
@@ -72,6 +78,8 @@ dotnet build demos/console/ConsoleDemo.csproj && dotnet build demos/volume/Volum
 - .NET 8.0 Windows target framework
 - Windows Presentation Foundation (WPF)
 - Windows Forms (for NotifyIcon)
+- **AudioSwitcher.AudioApi.CoreAudio** (3.0.3): Audio device control and volume management
+- **ManagedNativeWifi** (2.8.0): WiFi interface management and connection monitoring
 
 ### Demo Projects
 - .NET Framework 4.8
@@ -83,7 +91,11 @@ dotnet build demos/console/ConsoleDemo.csproj && dotnet build demos/volume/Volum
 ```
 Matsu/                          # Main WPF application (.NET 8.0)
 ├── App.xaml[.cs]              # Application entry point with system tray
-├── MainWindow.xaml[.cs]       # Primary window (minimal)
+├── MainWindow.xaml[.cs]       # Primary window with navigation
+├── DashboardPage.xaml[.cs]    # Main functional page
+├── AboutPage.xaml[.cs]        # About information page
+├── WiFiStatusMonitor.cs       # WiFi monitoring component
+├── VolumeManager.cs           # Audio volume management
 ├── demos/                     # Demonstration projects (.NET Framework 4.8)
 │   ├── console/               # Interactive console application
 │   ├── volume/                # Audio control demo
@@ -107,8 +119,11 @@ Comprehensive technical documentation is available in the `/docs` folder:
 - Demo projects are excluded from main solution build via `Directory.Build.props`
 - System tray application pattern: main window hides to tray rather than closing
 - Demo projects demonstrate common Windows system integration patterns
-- WiFi demo requires location permissions on Windows 11 24H2+
-- Audio demo showcases CoreAudio API integration
-- All projects follow interactive console patterns with graceful shutdown handling
+- WiFi monitoring requires location permissions on Windows 11 24H2+
+- Audio and WiFi components are integrated directly into the main application (not just demos)
+- Real-time status updates are handled through event-driven architecture with proper UI thread dispatching
+- Navigation uses WPF Frame control with custom button selection state management
+- Volume control includes slider interface with click-to-position behavior
+- All monitoring components implement IDisposable for proper resource cleanup
 - No formal test projects are configured in this solution
 - when i ask to research, just research and report the result

@@ -1,14 +1,6 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Brushes = System.Windows.Media.Brushes;
 
 namespace Matsu
 {
@@ -17,184 +9,130 @@ namespace Matsu
     /// </summary>
     public partial class MainWindow : Window
     {
-        private VolumeManager? _volumeManager;
-        private WiFiStatusMonitor? _wifiMonitor;
+        // Attached property to track button selection state
+        public static readonly DependencyProperty IsSelectedNavButtonProperty =
+            DependencyProperty.RegisterAttached("IsSelectedNavButton", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+        public static void SetIsSelectedNavButton(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsSelectedNavButtonProperty, value);
+        }
+
+        public static bool GetIsSelectedNavButton(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsSelectedNavButtonProperty);
+        }
+        private DashboardPage? _dashboardPage;
+        private AboutPage? _aboutPage;
+        private System.Windows.Controls.Button? _selectedNavButton;
 
         public MainWindow()
         {
             InitializeComponent();
-            InitializeVolumeManager();
-            InitializeWiFiMonitor();
+            
+            // Load Dashboard page by default and set as selected
+            NavigateToPage("Dashboard");
+            SetSelectedNavButton(DashboardNavButton);
         }
 
-        private void InitializeVolumeManager()
+        private void NavigationButton_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (sender is System.Windows.Controls.Button button && button.Tag is string pageName)
             {
-                _volumeManager = new VolumeManager();
-                _volumeManager.StateChanged += OnVolumeStateChanged;
-                _volumeManager.StartMonitoring();
-                
-                UpdateVolumeDisplay();
-                SetStatus("Volume control initialized", Brushes.Green);
-            }
-            catch (Exception ex)
-            {
-                // Clean up partial initialization
-                _volumeManager?.Dispose();
-                _volumeManager = null;
-                
-                SetStatus($"Error initializing volume control: {ex.Message}", Brushes.Red);
-                DisableControls();
+                NavigateToPage(pageName);
+                SetSelectedNavButton(button);
             }
         }
 
-        private void InitializeWiFiMonitor()
+        private void SetSelectedNavButton(System.Windows.Controls.Button selectedButton)
         {
-            try
+            var allNavButtons = new[] { DashboardNavButton, AboutNavButton };
+            
+            // Reset all buttons to unselected state
+            foreach (var button in allNavButtons)
             {
-                _wifiMonitor = new WiFiStatusMonitor();
-                _wifiMonitor.StatusChanged += OnWiFiStatusChanged;
+                SetIsSelectedNavButton(button, false);
+                button.Background = System.Windows.Media.Brushes.Transparent;
                 
-                if (_wifiMonitor.Initialize())
+                // Reset to default colors
+                var sp = button.Content as StackPanel;
+                if (sp != null)
                 {
-                    UpdateWiFiDisplay();
-                    SetStatus("System monitoring initialized", Brushes.Green);
-                }
-                else
-                {
-                    WiFiStatusLabel.Text = "WiFi: Permission required";
-                    NetworkNameLabel.Text = "Enable location access in Windows Settings";
-                    NetworkNameLabel.Foreground = Brushes.Orange;
-                }
-            }
-            catch (Exception)
-            {
-                // Clean up partial initialization
-                _wifiMonitor?.Dispose();
-                _wifiMonitor = null;
-                
-                WiFiStatusLabel.Text = "WiFi: Error";
-                NetworkNameLabel.Text = "WiFi monitoring unavailable";
-                NetworkNameLabel.Foreground = Brushes.Red;
-            }
-        }
-
-        private void OnVolumeStateChanged(VolumeState current, VolumeState previous)
-        {
-            Dispatcher.Invoke(() => UpdateVolumeDisplay());
-        }
-
-        private void OnWiFiStatusChanged(object? sender, WiFiStatusEventArgs e)
-        {
-            Dispatcher.Invoke(() => UpdateWiFiDisplay());
-        }
-
-        private void UpdateVolumeDisplay()
-        {
-            if (_volumeManager?.IsAvailable == true)
-            {
-                DeviceNameLabel.Text = $"Audio Device: {_volumeManager.DeviceName}";
-                VolumeStatusLabel.Text = $"Volume: {_volumeManager.CurrentVolume}%{(_volumeManager.IsMuted ? " (MUTED)" : "")}";
-                VolumeStatusLabel.Foreground = _volumeManager.IsMuted ? Brushes.Red : Brushes.Black;
-                
-                // Update slider without triggering events
-                VolumeSlider.ValueChanged -= VolumeSlider_ValueChanged;
-                VolumeSlider.Value = _volumeManager.CurrentVolume;
-                VolumeSlider.ValueChanged += VolumeSlider_ValueChanged;
-                
-                EnableControls();
-            }
-            else
-            {
-                DeviceNameLabel.Text = "Audio Device: No device available";
-                VolumeStatusLabel.Text = "Volume: --%";
-                VolumeStatusLabel.Foreground = Brushes.Gray;
-                DisableControls();
-            }
-        }
-
-        private void UpdateWiFiDisplay()
-        {
-            if (_wifiMonitor?.IsConnected == true)
-            {
-                WiFiStatusLabel.Text = "WiFi: Connected";
-                WiFiStatusLabel.Foreground = Brushes.Green;
-                NetworkNameLabel.Text = $"Network: {_wifiMonitor.CurrentSSID}";
-                NetworkNameLabel.Foreground = Brushes.DarkBlue;
-            }
-            else
-            {
-                WiFiStatusLabel.Text = "WiFi: Disconnected";
-                WiFiStatusLabel.Foreground = Brushes.Red;
-                NetworkNameLabel.Text = "No network connection";
-                NetworkNameLabel.Foreground = Brushes.Gray;
-            }
-        }
-
-        private void EnableControls()
-        {
-            MuteToggleButton.IsEnabled = true;
-            VolumeSlider.IsEnabled = true;
-        }
-
-        private void DisableControls()
-        {
-            MuteToggleButton.IsEnabled = false;
-            VolumeSlider.IsEnabled = false;
-        }
-
-        private void SetStatus(string message, System.Windows.Media.Brush color)
-        {
-            StatusLabel.Text = message;
-            StatusLabel.Foreground = color;
-        }
-
-        private void MuteToggleButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (_volumeManager?.ToggleMute() == true)
-                {
-                    bool isMuted = _volumeManager.IsMuted;
-                    SetStatus(isMuted ? "Audio muted" : "Audio unmuted", Brushes.Green);
-                }
-                else
-                {
-                    SetStatus("Failed to toggle mute", Brushes.Red);
+                    bool isFirstChild = true;
+                    foreach (var child in sp.Children)
+                    {
+                        if (child is TextBlock tb)
+                        {
+                            if (isFirstChild) // Icon (first TextBlock)
+                            {
+                                tb.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0x00, 0x78, 0xD4)); // Blue icon
+                                isFirstChild = false;
+                            }
+                            else // Text label (second TextBlock)
+                            {
+                                tb.Foreground = System.Windows.Media.Brushes.Black;
+                            }
+                        }
+                    }
                 }
             }
-            catch (Exception ex)
+            
+            // Set the selected button state
+            _selectedNavButton = selectedButton;
+            SetIsSelectedNavButton(selectedButton, true);
+            selectedButton.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0x00, 0x78, 0xD4)); // Windows accent blue
+            
+            // Update selected button colors
+            var stackPanel = selectedButton.Content as StackPanel;
+            if (stackPanel != null)
             {
-                SetStatus($"Error toggling mute: {ex.Message}", Brushes.Red);
+                foreach (var child in stackPanel.Children)
+                {
+                    if (child is TextBlock textBlock)
+                    {
+                        textBlock.Foreground = System.Windows.Media.Brushes.White;
+                    }
+                }
             }
         }
 
-        private void VolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void NavigateToPage(string pageName)
         {
-            try
+            Page? page = pageName switch
             {
-                int volume = (int)e.NewValue;
-                
-                if (_volumeManager.SetVolume(volume))
-                {
-                    SetStatus($"Volume set to {volume}%", Brushes.Green);
-                }
-                else
-                {
-                    SetStatus("Failed to set volume", Brushes.Red);
-                }
-            }
-            catch (Exception ex)
+                "Dashboard" => GetOrCreateDashboardPage(),
+                "About" => GetOrCreateAboutPage(),
+                _ => GetOrCreateDashboardPage()
+            };
+
+            if (page != null)
             {
-                SetStatus($"Error setting volume: {ex.Message}", Brushes.Red);
+                ContentFrame.Navigate(page);
             }
+        }
+
+        private DashboardPage GetOrCreateDashboardPage()
+        {
+            if (_dashboardPage == null)
+            {
+                _dashboardPage = new DashboardPage();
+            }
+            return _dashboardPage;
+        }
+
+        private AboutPage GetOrCreateAboutPage()
+        {
+            if (_aboutPage == null)
+            {
+                _aboutPage = new AboutPage();
+            }
+            return _aboutPage;
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            _volumeManager?.Dispose();
-            _wifiMonitor?.Dispose();
+            // Clean up dashboard page when window closes
+            _dashboardPage?.Cleanup();
             base.OnClosed(e);
         }
     }
