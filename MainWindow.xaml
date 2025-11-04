@@ -6,6 +6,7 @@
     xmlns:local="using:Matsu"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tb="using:H.NotifyIcon"
     mc:Ignorable="d"
     Title="Matsu">
 
@@ -15,5 +16,22 @@
 
     <Grid>
 
+        <tb:TaskbarIcon
+            x:Name="TrayIcon"
+            ToolTipText="My WinUI Task Tray App"
+            IconSource="/Assets/TaskTray.ico"
+            LeftClickCommand="{x:Bind ShowWindowCommand}"
+            >
+            <tb:TaskbarIcon.ContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem
+                        Text="Show"
+                        Command="{x:Bind ShowWindowCommand}" />
+                    <MenuFlyoutItem
+                        Text="Exit"
+                        Command="{x:Bind CloseWindowCommand}" />
+                </MenuFlyout>
+            </tb:TaskbarIcon.ContextFlyout>
+        </tb:TaskbarIcon>
     </Grid>
 </Window>
