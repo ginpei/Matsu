@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Matsu (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Matsu (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
