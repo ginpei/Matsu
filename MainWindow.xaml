@@ -15,7 +15,20 @@
     </Window.SystemBackdrop>
 
     <Grid>
-
+        <NavigationView
+            x:Name="NavView"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="False"
+            PaneTitle="Matsu"
+            SelectionChanged="NavView_SelectionChanged"
+            >
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Home" Icon="Home" Tag="home" />
+                <NavigationViewItemSeparator />
+                <NavigationViewItem Content="About" Icon="Help" Tag="about" />
+            </NavigationView.MenuItems>
+            <Frame x:Name="ContentFrame"/>
+        </NavigationView>
         <tb:TaskbarIcon
             x:Name="TrayIcon"
             ToolTipText="My WinUI Task Tray App"

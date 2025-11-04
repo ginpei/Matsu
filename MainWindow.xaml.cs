@@ -14,6 +14,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
+using Matsu.Pages;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -32,6 +33,15 @@ namespace Matsu
             InitializeComponent();
 
             this.Closed += OnWindowClosed;
+
+            foreach (var item in NavView.MenuItems)
+            {
+                if (item is NavigationViewItem navItem && navItem.Tag.ToString() == "home")
+                {
+                    NavView.SelectedItem = item;
+                    break;
+                }
+            }
         }
 
         private void OnWindowClosed(object sender, WindowEventArgs args)
@@ -40,6 +50,23 @@ namespace Matsu
             {
                 args.Handled = true;
                 this.Hide();
+            }
+        }
+
+        private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            if (args.SelectedItemContainer != null)
+            {
+                var selectedItemTag = args.SelectedItemContainer.Tag.ToString();
+                switch (selectedItemTag)
+                {
+                    case "home":
+                        ContentFrame.Navigate(typeof(HomePage));
+                        break;
+                    case "about":
+                        ContentFrame.Navigate(typeof(AboutPage));
+                        break;
+                }
             }
         }
 
