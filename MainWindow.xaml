@@ -26,6 +26,7 @@
                 <NavigationViewItem Content="Home" Icon="Home" Tag="home" />
                 <NavigationViewItemSeparator />
                 <NavigationViewItem Content="About" Icon="Help" Tag="about" />
+                <NavigationViewItem Content="Debug" Icon="Admin" Tag="debug" />
             </NavigationView.MenuItems>
             <Frame x:Name="ContentFrame"/>
         </NavigationView>

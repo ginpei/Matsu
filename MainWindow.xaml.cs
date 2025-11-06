@@ -66,6 +66,9 @@ namespace Matsu
                     case "about":
                         ContentFrame.Navigate(typeof(AboutPage));
                         break;
+                    case "debug":
+                        ContentFrame.Navigate(typeof(DebugPage));
+                        break;
                 }
             }
         }

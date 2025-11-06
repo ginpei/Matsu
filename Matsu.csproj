@@ -15,6 +15,7 @@
   <ItemGroup>
     <None Remove="Assets\TaskTray.ico" />
     <None Remove="Pages\AboutPage.xaml" />
+    <None Remove="Pages\DebugPage.xaml" />
     <None Remove="Pages\HomePage.xaml" />
   </ItemGroup>
 
@@ -43,6 +44,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="H.NotifyIcon.WinUI" Version="2.3.2" />
+    <PackageReference Include="ManagedNativeWifi" Version="3.0.2" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6901" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251003001" />
   </ItemGroup>
@@ -50,6 +52,11 @@
     <Content Update="Assets\TaskTray.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\DebugPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\AboutPage.xaml">
