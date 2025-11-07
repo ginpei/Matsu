@@ -13,8 +13,31 @@
     <StackPanel x:Name="RootPanel" Spacing="20" Margin="20,50">
         <TextBlock Text="Debug Page" FontSize="32" FontWeight="Bold" />
         <StackPanel x:Name="WifiNetworksPanel">
-            <TextBlock Text="{Binding WifiState}" />
-            <TextBlock Text="{Binding Ssid}" />
+            <TextBlock
+                Text="WiFi"
+                FontSize="18"
+                FontWeight="SemiBold"
+                Margin="0,0,0,8"/>
+            <Expander
+                Header="WiFi status"
+                IsExpanded="True"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch">
+                <Grid ColumnSpacing="12" RowSpacing="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Connection state" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding WifiState}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Connected SSID" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Ssid}"/>
+                </Grid>
+            </Expander>
         </StackPanel>
     </StackPanel>
 </Page>
