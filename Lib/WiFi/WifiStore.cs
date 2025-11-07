@@ -17,14 +17,26 @@ namespace Matsu.Lib.WiFi
         private NativeWifiPlayer? _wifiPlayer;
         private readonly SynchronizationContext? _synchronizationContext;
 
-        [ObservableProperty]
         private string _wifiState = "Initializing...";
+        public string WifiState
+        {
+            get => _wifiState;
+            set => SetProperty(ref _wifiState, value);
+        }
 
-        [ObservableProperty]
         private string _ssid = "";
+        public string Ssid
+        {
+            get => _ssid;
+            set => SetProperty(ref _ssid, value);
+        }
 
-        [ObservableProperty]
         private string _errorMessage = "";
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set => SetProperty(ref _errorMessage, value);
+        }
 
         public WifiStore()
         {
@@ -33,12 +45,12 @@ namespace Matsu.Lib.WiFi
             try
             {
                 _wifiPlayer = new NativeWifiPlayer();
-                _wifiState = "Pending...";
+                WifiState = "Pending...";
             }
             catch (UnauthorizedAccessException)
             {
-                _wifiState = "Failed to start up";
-                _errorMessage = "Permission required for WiFi.";
+                WifiState = "Failed to start up";
+                ErrorMessage = "Permission required for WiFi.";
             }
 
             if (_wifiPlayer != null)
