@@ -58,42 +58,53 @@ namespace Matsu.Lib.WiFi
                 _wifiPlayer.ConnectionChanged += WifiPlayer_ConnectionChanged;
             }
 
-            UpdateWifiStatus();
+            UpdateWifiStatus(false);
         }
 
         private void WifiPlayer_ConnectionChanged(object? sender, ConnectionChangedEventArgs e)
         {
             Debug.WriteLine($"status: {e.ChangedState.ToString()}");
-             
+
+            var pending = e.ChangedState != ConnectionChangedState.Completed && e.ChangedState != ConnectionChangedState.Disconnected && e.ChangedState != ConnectionChangedState.Failed;
+
             // Marshal the call back to the UI thread to avoid cross-thread exceptions
             if (_synchronizationContext != null)
             {
-                _synchronizationContext.Post(_ => UpdateWifiStatus(), null);
+                _synchronizationContext.Post(_ => UpdateWifiStatus(pending), null);
             }
             else
             {
                 // Fallback for non-UI scenarios
-                Task.Run(() => UpdateWifiStatus());
+                Task.Run(() => UpdateWifiStatus(pending));
             }
         }
 
-        private void UpdateWifiStatus()
+        private void UpdateWifiStatus(bool pending)
         {
             if (_wifiPlayer == null)
             {
                 return;
             }
 
-            var ssids = NativeWifi.EnumerateConnectedNetworkSsids();
-            if (ssids.Count() > 0)
+
+            if (pending)
             {
-                WifiState = "Connected";
-                Ssid = ssids.First().ToString();
+                WifiState = "Pending...";
+                Ssid = "";
             }
             else
             {
-                WifiState = "Not Connected";
-                Ssid = "";
+                var ssids = NativeWifi.EnumerateConnectedNetworkSsids();
+                if (ssids.Count() > 0)
+                {
+                    WifiState = "Connected";
+                    Ssid = ssids.First().ToString();
+                }
+                else
+                {
+                    WifiState = "Not Connected";
+                    Ssid = "";
+                }
             }
         }
     }
