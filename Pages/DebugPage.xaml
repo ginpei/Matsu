@@ -39,5 +39,29 @@
                 </Grid>
             </Expander>
         </StackPanel>
+        <TextBlock
+            Text="Color theme"
+            FontSize="18"
+            FontWeight="SemiBold"
+            Margin="0,12,0,0"
+            />
+        <StackPanel
+            Background="{ThemeResource ControlFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="8"
+            Spacing="12"
+            >
+            <TextBlock>
+                <Run Text="Current app theme:" FontWeight="SemiBold"/>
+                <Run x:Name="CurrentThemeText" Text="..."/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="System theme" Click="SystemThemeButton_Click"/>
+                <Button Content="Light mode" Click="LightThemeButton_Click"/>
+                <Button Content="Darkmode" Click="DarkThemeButton_Click"/>
+            </StackPanel>
+        </StackPanel>
     </StackPanel>
 </Page>
