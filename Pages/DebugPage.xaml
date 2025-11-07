@@ -10,19 +10,16 @@
     d:DataContext="{d:DesignInstance Type=wifi:WifiStore}"
     mc:Ignorable="d">
 
-    <StackPanel x:Name="RootPanel" Spacing="20" Margin="20,50">
-        <TextBlock Text="Debug Page" FontSize="32" FontWeight="Bold" />
-        <StackPanel x:Name="WifiNetworksPanel">
-            <TextBlock
-                Text="WiFi"
-                FontSize="18"
-                FontWeight="SemiBold"
-                Margin="0,0,0,8"/>
+    <StackPanel x:Name="RootPanel" Spacing="12" Margin="20,50">
+        <TextBlock Text="Debug Page" FontSize="28" FontWeight="SemiBold" />
+        <StackPanel x:Name="WifiNetworksPanel" Spacing="8">
+            <TextBlock Text="WiFi" FontWeight="SemiBold"/>
             <Expander
                 Header="WiFi status"
                 IsExpanded="True"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch">
+                HorizontalContentAlignment="Stretch"
+                >
                 <Grid ColumnSpacing="12" RowSpacing="6">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -39,28 +36,25 @@
                 </Grid>
             </Expander>
         </StackPanel>
-        <TextBlock
-            Text="Color theme"
-            FontSize="18"
-            FontWeight="SemiBold"
-            Margin="0,12,0,0"
-            />
-        <StackPanel
-            Background="{ThemeResource ControlFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            CornerRadius="4"
-            Padding="8"
-            Spacing="12"
-            >
-            <TextBlock>
-                <Run Text="Current app theme:" FontWeight="SemiBold"/>
-                <Run x:Name="CurrentThemeText" Text="..."/>
-            </TextBlock>
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Content="System theme" Click="SystemThemeButton_Click"/>
-                <Button Content="Light mode" Click="LightThemeButton_Click"/>
-                <Button Content="Darkmode" Click="DarkThemeButton_Click"/>
+        <StackPanel Spacing="8">
+            <TextBlock Text="Color theme" FontWeight="SemiBold"/>
+            <StackPanel
+                Background="{ThemeResource ControlFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="18"
+                Spacing="12"
+                >
+                <TextBlock>
+                    <Run Text="Current app theme:" FontWeight="SemiBold"/>
+                    <Run x:Name="CurrentThemeText" Text="..."/>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="System theme" Click="SystemThemeButton_Click"/>
+                    <Button Content="Light mode" Click="LightThemeButton_Click"/>
+                    <Button Content="Darkmode" Click="DarkThemeButton_Click"/>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </StackPanel>
