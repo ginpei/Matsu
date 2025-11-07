@@ -63,7 +63,7 @@ namespace Matsu.Lib.WiFi
 
         private void WifiPlayer_ConnectionChanged(object? sender, ConnectionChangedEventArgs e)
         {
-            Debug.WriteLine($"status: {e.ChangedState.ToString()}");
+            Debug.WriteLine($"ConnectionChangedState: {e.ChangedState.ToString()}");
 
             var pending = e.ChangedState != ConnectionChangedState.Completed && e.ChangedState != ConnectionChangedState.Disconnected && e.ChangedState != ConnectionChangedState.Failed;
 
