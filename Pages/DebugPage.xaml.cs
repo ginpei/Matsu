@@ -15,6 +15,7 @@ using Windows.Foundation.Collections;
 using ManagedNativeWifi;
 using Matsu.Lib.Wifi;
 using System.Diagnostics;
+using Matsu.Lib.Audio;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -27,6 +28,7 @@ namespace Matsu.Pages
     public sealed partial class DebugPage : Page
     {
         readonly WifiStore wifiStore;
+        readonly AudioStore audioStore;
 
         public string GreetingMessage { get; set; } = "Hello, WinUI 3!";
 
@@ -36,6 +38,9 @@ namespace Matsu.Pages
 
             wifiStore = new WifiStore();
             WifiNetworksPanel.DataContext = wifiStore;
+
+            audioStore = new AudioStore();
+            AudioPanel.DataContext = audioStore;
 
             if (this.XamlRoot?.Content is FrameworkElement rootElement)
             {
