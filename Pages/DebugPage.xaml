@@ -64,7 +64,6 @@
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Mute" FontWeight="SemiBold"/>
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding IsMuted}"/>
             </Grid>
-            <TextBlock Text="TODO follow device changes"/>
         </StackPanel>
 
         <StackPanel Spacing="8">
