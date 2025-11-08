@@ -10,7 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 
-namespace Matsu.Lib.WiFi
+namespace Matsu.Lib.Wifi
 {
     public partial class WifiStore : ObservableObject
     {

@@ -13,7 +13,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using ManagedNativeWifi;
-using Matsu.Lib.WiFi;
+using Matsu.Lib.Wifi;
 using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,

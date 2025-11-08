@@ -6,7 +6,7 @@
     xmlns:local="using:Matsu.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:wifi="using:Matsu.Lib.WiFi"
+    xmlns:wifi="using:Matsu.Lib.Wifi"
     d:DataContext="{d:DesignInstance Type=wifi:WifiStore}"
     mc:Ignorable="d">
 
