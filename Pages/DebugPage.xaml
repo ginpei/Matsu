@@ -7,12 +7,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:wifi="using:Matsu.Lib.Wifi"
-    d:DataContext="{d:DesignInstance Type=wifi:WifiStore}"
+    xmlns:audio="using:Matsu.Lib.Audio"
     mc:Ignorable="d">
 
     <StackPanel x:Name="RootPanel" Spacing="12" Margin="20,50">
         <TextBlock Text="Debug Page" FontSize="28" FontWeight="SemiBold" />
-        <StackPanel x:Name="WifiNetworksPanel" Spacing="8">
+        <StackPanel x:Name="WifiNetworksPanel" d:DataContext="{d:DesignInstance Type=wifi:WifiStore}" Spacing="8">
             <TextBlock Text="WiFi" FontWeight="SemiBold"/>
             <Expander
                 Header="WiFi status"
@@ -37,7 +37,7 @@
             </Expander>
         </StackPanel>
 
-        <StackPanel x:Name="AudioPanel" Spacing="8">
+        <StackPanel x:Name="AudioPanel" d:DataContext="{d:DesignInstance Type=audio:AudioStore}" Spacing="8">
             <TextBlock Text="Audio" FontWeight="SemiBold"/>
             <Grid
                 ColumnSpacing="12"
