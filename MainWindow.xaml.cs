@@ -63,6 +63,9 @@ namespace Matsu
                     case "home":
                         ContentFrame.Navigate(typeof(HomePage));
                         break;
+                    case "agent":
+                        ContentFrame.Navigate(typeof(AgentPage));
+                        break;
                     case "about":
                         ContentFrame.Navigate(typeof(AboutPage));
                         break;

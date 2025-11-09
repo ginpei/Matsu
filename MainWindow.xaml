@@ -24,6 +24,7 @@
             >
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Home" Icon="Home" Tag="home" />
+                <NavigationViewItem Content="Agent" Icon="Contact" Tag="agent" />
                 <NavigationViewItemSeparator />
                 <NavigationViewItem Content="About" Icon="Help" Tag="about" />
                 <NavigationViewItem Content="Debug" Icon="Admin" Tag="debug" />

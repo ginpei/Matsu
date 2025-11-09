@@ -16,6 +16,7 @@
   <ItemGroup>
     <None Remove="Assets\TaskTray.ico" />
     <None Remove="Pages\AboutPage.xaml" />
+    <None Remove="Pages\AgentPage.xaml" />
     <None Remove="Pages\DebugPage.xaml" />
     <None Remove="Pages\HomePage.xaml" />
   </ItemGroup>
@@ -55,6 +56,11 @@
     <Content Update="Assets\TaskTray.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\AgentPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\DebugPage.xaml">

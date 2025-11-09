@@ -27,7 +27,6 @@ namespace Matsu
     public partial class App : Application
     {
         private Window? _window;
-        private readonly Lib.Agent.PrototypeAgent _agent = new();
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
