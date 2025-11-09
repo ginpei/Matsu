@@ -1,18 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using ManagedNativeWifi;
 using Matsu.Lib.Wifi;
 using System.Diagnostics;
 using Matsu.Lib.Audio;
@@ -30,8 +19,6 @@ namespace Matsu.Pages
         readonly WifiStore wifiStore;
         readonly AudioStore audioStore;
 
-        public string GreetingMessage { get; set; } = "Hello, WinUI 3!";
-
         public DebugPage()
         {
             InitializeComponent();
@@ -48,16 +35,9 @@ namespace Matsu.Pages
             }
         }
 
-        private void MyButton_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO
-        }
-
         private void SystemThemeButton_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("System");
-            GreetingMessage = "System";
-            CurrentThemeText.Text = "Sys";
             // Set theme on the root content instead of Application.Current
             if (this.XamlRoot?.Content is FrameworkElement rootElement)
             {
