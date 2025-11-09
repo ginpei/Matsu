@@ -65,7 +65,7 @@ namespace Matsu.Lib.Audio
                 Name = device.FriendlyName;
                 Volume = (uint)(device.AudioEndpointVolume.MasterVolumeLevelScalar * 100);
                 IsMuted = device.AudioEndpointVolume.Mute;
-                Debug.WriteLine($"UpdateValuesByDevice {Name} {Volume}");
+                Debug.WriteLine($"UpdateValuesByDevice {Name} {Volume} {(IsMuted ? "(muted)" : "")}");
             });
         }
 
