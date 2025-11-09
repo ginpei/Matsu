@@ -98,5 +98,15 @@ namespace Matsu.Pages
             uint newVolume = (uint)Math.Round(slider.Value);
             audioStore.SetVolume(newVolume);
         }
+
+        private void MuteToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (audioStore == null)
+            {
+                return;
+            }
+
+            audioStore.ToggleMute();
+        }
     }
 }

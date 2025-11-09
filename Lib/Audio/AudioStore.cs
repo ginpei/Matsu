@@ -137,5 +137,28 @@ namespace Matsu.Lib.Audio
                 Debug.WriteLine($"SetVolume Exception: {ex}");
             }
         }
+
+        public void SetMute(bool mute)
+        {
+            if (device?.AudioEndpointVolume == null)
+            {
+                return;
+            }
+
+            try
+            {
+                device.AudioEndpointVolume.Mute = mute;
+                IsMuted = mute;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"SetMute Exception: {ex}");
+            }
+        }
+
+        public void ToggleMute()
+        {
+            SetMute(!IsMuted);
+        }
     }
 }
