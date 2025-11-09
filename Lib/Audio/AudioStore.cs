@@ -1,5 +1,4 @@
-﻿using AudioSwitcher.AudioApi.CoreAudio;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.Generic;
@@ -9,10 +8,13 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Input;
+using NAudio.CoreAudioApi;
+using NAudio.CoreAudioApi.Interfaces;
+using System.Threading;
 
 namespace Matsu.Lib.Audio
 {
-    internal class AudioStore : ObservableObject
+    internal class AudioStore : ObservableObject, IDisposable, IMMNotificationClient
     {
         private string _name = "";
         public string Name
@@ -21,8 +23,8 @@ namespace Matsu.Lib.Audio
             set => SetProperty(ref _name, value);
         }
 
-        private double _volume;
-        public double Volume
+        private uint _volume;
+        public uint Volume
         {
             get => _volume;
             set => SetProperty(ref _volume, value);
@@ -35,57 +37,81 @@ namespace Matsu.Lib.Audio
             set => SetProperty(ref _isMuted, value);
         }
 
-        private CoreAudioController controller = new CoreAudioController();
-        private CoreAudioDevice device;
-        private IDisposable? volumeSubscription;
+        private MMDeviceEnumerator deviceEnumerator;
+        private MMDevice? device;
 
         private readonly DispatcherQueue dispatcher = DispatcherQueue.GetForCurrentThread();
 
-        public AudioStore() {
-            device = controller.DefaultPlaybackDevice;
-            ResetDevice(device);
+        public AudioStore()
+        {
+            deviceEnumerator = new MMDeviceEnumerator();
+            deviceEnumerator.RegisterEndpointNotificationCallback(this);
 
-            controller.AudioDeviceChanged.Subscribe((e) =>
-            {
-                var newDevice = controller.DefaultPlaybackDevice;
-                if (newDevice != device)
-                {
-                    ResetDevice(newDevice);
-                    device = newDevice;
-                }
-            });
+            device = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            device.AudioEndpointVolume.OnVolumeNotification += Device_OnVolumeNotification;
+
+            UpdateValuesByDevice();
         }
 
-        private void ResetDevice(CoreAudioDevice device)
+        private void UpdateValuesByDevice()
         {
-            Debug.WriteLine($"DefaultChanged: {device.FullName}");
-
-            volumeSubscription?.Dispose();
-            volumeSubscription = device.VolumeChanged.Subscribe((e) =>
+            if (device == null)
             {
-                dispatcher.TryEnqueue(() =>
-                {
-                    Name = device.FullName;
-                    Volume = device.Volume;
-                    IsMuted = device.IsMuted;
-                });
-            });
+                return;
+            }
 
             dispatcher.TryEnqueue(() =>
             {
-                Debug.WriteLine($"audio store: {device.FullName}");
-                Name = device.FullName;
-                Volume = device.Volume;
-                IsMuted = device.IsMuted;
+                Name = device.FriendlyName;
+                Volume = (uint)(device.AudioEndpointVolume.MasterVolumeLevelScalar * 100);
+                IsMuted = device.AudioEndpointVolume.Mute;
+                Debug.WriteLine($"UpdateValuesByDevice {Name} {Volume}");
             });
         }
 
-        public void Dispose()
+        private void Device_OnVolumeNotification(AudioVolumeNotificationData data)
         {
-            volumeSubscription?.Dispose();
-            //device?.Dispose();
-            controller.Dispose();
+            UpdateValuesByDevice();
         }
 
+        // IMMNotificationClient implementation for device change notifications
+        public void OnDeviceStateChanged(string pwstrDeviceId, DeviceState dwNewState) { }
+
+        public void OnDeviceAdded(string pwstrDeviceId) { }
+
+        public void OnDeviceRemoved(string pwstrDeviceId) { }
+
+        public void OnDefaultDeviceChanged(DataFlow dataFlow, Role deviceRole, string pwstrDefaultDeviceId)
+        {
+            try
+            {
+                if (device != null)
+                {
+                    device.AudioEndpointVolume.OnVolumeNotification -= Device_OnVolumeNotification;
+                    //device.Dispose();
+                }
+
+                var newDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                Debug.WriteLine($"OnDefaultDeviceChanged {device?.FriendlyName} -> {newDevice?.FriendlyName}");
+                device = newDevice;
+                if (device != null)
+                {
+                    device.AudioEndpointVolume.OnVolumeNotification += Device_OnVolumeNotification;
+                    UpdateValuesByDevice();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"OnDefaultDeviceChanged Exception: {ex}");
+            }
+        }
+
+        public void OnPropertyValueChanged(string pwstrDeviceId, PropertyKey key) { }
+
+        public void Dispose()
+        {
+            deviceEnumerator?.UnregisterEndpointNotificationCallback(this);
+            deviceEnumerator?.Dispose();
+        }
     }
 }
