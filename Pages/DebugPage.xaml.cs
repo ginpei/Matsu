@@ -87,5 +87,16 @@ namespace Matsu.Pages
                 CurrentThemeText.Text = rootElement.RequestedTheme.ToString();
             }
         }
+
+        private void VolumeSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (sender is not Slider slider || audioStore == null)
+            {
+                return;
+            }
+
+            uint newVolume = (uint)Math.Round(slider.Value);
+            audioStore.SetVolume(newVolume);
+        }
     }
 }

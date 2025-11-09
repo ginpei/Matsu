@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Dispatching;
+﻿using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,6 +10,7 @@ using Windows.Devices.Input;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
 using System.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Matsu.Lib.Audio
 {
@@ -112,6 +112,30 @@ namespace Matsu.Lib.Audio
         {
             deviceEnumerator?.UnregisterEndpointNotificationCallback(this);
             deviceEnumerator?.Dispose();
+        }
+
+        public void SetVolume(uint newVolume)
+        {
+            if (device?.AudioEndpointVolume == null)
+            {
+                return;
+            }
+
+            try
+            {
+                // Clamp volume between 0 and 100
+                newVolume = Math.Max(0, Math.Min(newVolume, 100));
+
+                // Convert from percentage to scalar (0.0 to 1.0)
+                float volumeScalar = newVolume / 100.0f;
+
+                device.AudioEndpointVolume.MasterVolumeLevelScalar = volumeScalar;
+                Volume = newVolume;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"SetVolume Exception: {ex}");
+            }
         }
     }
 }

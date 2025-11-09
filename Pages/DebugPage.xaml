@@ -52,6 +52,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -63,6 +64,18 @@
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Volume}"/>
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Mute" FontWeight="SemiBold"/>
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding IsMuted}"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Volume Control" FontWeight="SemiBold"/>
+                <Slider
+                    x:Name="VolumeSlider"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Minimum="0"
+                    Maximum="100"
+                    Value="{Binding Volume, Mode=OneWay}"
+                    ValueChanged="VolumeSlider_ValueChanged"
+                    Width="300px"
+                    HorizontalAlignment="Left"
+                    />
             </Grid>
         </StackPanel>
 
